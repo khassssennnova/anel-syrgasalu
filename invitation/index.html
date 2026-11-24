@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anel · Syrga Salu · 17.04.2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+/* ===== КАРТИНКИ: положите файлы в папку img/ с этими именами (или поменяйте пути) ===== */
+:root{
+  --img-bg:        url(img/cover.jpg);     /* фон всего сайта: ваш cover.jpg */
+  --img-paper:     url(img/paper.jpg);     /* текстура бумаги для карточек */
+  --img-cover:     url(img/cover.jpg);     /* пейзаж внутри овала (горы, юрта) */
+  --img-frame:     url(img/frame.png);     /* овальная рамка с цветами, PNG с прозрачностью */
+  --img-photo:     url(img/photo.jpg);     /* ваше фото / образ (овал) */
+  --img-venue:     url(img/venue.jpg);     /* картинка места (юрта/здание) */
+  --img-bird:      url(img/bird.png);      /* ласточка PNG с прозрачностью */
+  --img-footer:    url(img/mountains.png); /* горы внизу */
+
+  --ink:#37483b; --soft:#6f8272; --blue:#bccfb9; --blue-d:#8fa98d; --paper:#f3f1e6;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:"EB Garamond",Georgia,serif;color:var(--ink);font-size:19px;line-height:1.5;text-align:center;
+  background:#e6eee3;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+body::before,body::after{content:"";position:fixed;inset:0;z-index:-1}
+/* cover.jpg целиком (contain) + его же размытая копия по краям, если пропорции экрана другие */
+body::before{background:var(--img-bg) center/cover;filter:blur(22px);transform:scale(1.12)}
+body:not(.opened)::before,body:not(.opened)::after{opacity:0}
+body::before,body::after{transition:opacity 1.4s ease}
+body:not(.opened) .wrap{visibility:hidden}
+body::after{background:var(--img-bg) center/contain no-repeat}
+.wrap{max-width:440px;margin:0 auto;padding:58px 16px 40px;display:flex;flex-direction:column;gap:22px}
+.script{font-family:"Pinyon Script","Playfair Display",serif;font-weight:400;line-height:1.1}
+.cyr{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:400;line-height:1.25}
+h2{font-family:"Playfair Display",Georgia,serif;font-weight:400;font-size:19px;letter-spacing:.06em;line-height:1.5}
+small{font-size:15px;color:var(--soft)}
+
+/* переключатель языков */
+.lang{position:fixed;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);z-index:40;
+  display:flex;gap:2px;padding:3px;border-radius:30px;background:rgba(255,255,255,.8);backdrop-filter:blur(6px);
+  box-shadow:0 4px 16px rgba(100,135,105,.25)}
+.lang button{border:0;background:none;padding:6px 14px;border-radius:30px;font:inherit;font-size:15px;letter-spacing:.08em;color:var(--soft);cursor:pointer}
+.lang button.on{background:#6b8a6d;color:#fff}
+.lang button:focus-visible{outline:2px solid var(--blue-d)}
+
+/* бумажная карточка */
+.paper{position:relative;background:var(--paper) var(--img-paper) center/cover;padding:34px 26px;
+  border-radius:6px 14px 8px 12px;box-shadow:0 10px 30px rgba(100,135,105,.22)}
+.paper::before{content:"";position:absolute;inset:9px;border:1px solid rgba(143,169,141,.55);border-radius:10px;pointer-events:none}
+.paper.blue{background-color:var(--blue);color:#fff}
+.paper.blue::before{border-color:rgba(255,255,255,.6)}
+
+/* обложка */
+.cover{position:relative;padding:26px 0 8px}
+.oval{position:relative;width:88%;aspect-ratio:1/1;margin:0 auto;border-radius:50%;background:#f1efe3 var(--img-frame) center/cover;box-shadow:0 14px 36px rgba(100,135,105,.35)}
+.oval .names{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);color:var(--ink)}
+.oval .names .script{font-size:64px}
+.script::first-letter{font-size:1.3em}
+.oval .names p{font-size:19px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px}
+
+
+.invite-text{font-size:20px}
+.invite-text h2{text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.nm{font-size:34px;margin:12px 0}
+
+/* конверт с сургучной печатью: картинки img/env-texture.jpg и img/seal.png */
+:root{--img-env:url(img/env-texture.png);--img-seal:url(img/seal.png)}
+#env{position:fixed;inset:0;z-index:30;perspective:1100px;overflow:hidden;cursor:pointer;transition:visibility 0s 2.4s}
+#env.open{visibility:hidden;pointer-events:none}
+#env .tex{background:#efe5d8 var(--img-env) top center/100% 100% no-repeat}
+#env .flap .tex{background-size:100% 208.333%}
+.pocket{position:absolute;inset:0;z-index:1;clip-path:polygon(0 0,50% 48%,100% 0,100% 100%,0 100%);transition:transform .9s ease 1.3s}
+.flap{position:absolute;left:0;right:0;top:0;height:48%;z-index:2;transform-origin:top;
+  filter:drop-shadow(0 8px 10px rgba(90,70,50,.28));transition:transform .9s ease .3s}
+.flap>div{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%)}
+@media (min-width:700px){#env{right:auto;left:50%;width:440px;margin-left:-220px}}
+.seal{position:absolute;left:50%;top:48%;width:min(38vw,180px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;
+  background:var(--img-seal) center/contain no-repeat;
+  filter:drop-shadow(0 8px 10px rgba(90,70,50,.35));transition:opacity .35s,transform .35s}
+.env-hint{position:absolute;left:0;right:0;bottom:12%;z-index:3;text-align:center;font-size:20px;letter-spacing:.06em;color:#8a7a68;transition:opacity .3s}
+#env.open .seal{opacity:0;transform:translate(-50%,-50%) scale(1.3)}
+#env.open .flap{transform:rotateX(180deg)}
+#env.open .pocket{transform:translateY(105%)}
+#env.open .env-hint{opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .seal{animation:pulse 2.2s ease-in-out infinite}
+  #env.open .seal{animation:none}
+  @keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.06)}}
+}
+
+/* дата, время, календарь */
+.datecard .wd{font-family:"Playfair Display",serif;font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft)}
+.bigday{display:flex;flex-direction:column;align-items:center}
+.bigday .cyr:first-child{font-size:96px;line-height:1.05}
+.bigday .mo{font-size:24px}
+.time{margin:16px auto 24px;padding:10px 0;width:72%;border-block:1px solid rgba(143,169,141,.65)}
+.time b{display:block;font-family:"Playfair Display",serif;font-weight:400;font-size:38px;letter-spacing:.06em;line-height:1.3}
+.time span{font-size:15px;letter-spacing:.14em;color:var(--soft);text-transform:uppercase}
+.calhead{font-size:22px;margin-bottom:10px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);row-gap:4px;font-family:"Playfair Display",serif;font-size:17px}
+.cal span{position:relative;line-height:34px}
+.cal .dw{font-family:"EB Garamond",serif;font-size:13px;letter-spacing:.06em;color:var(--soft);line-height:26px}
+.day17{font-weight:500;color:var(--ink)}
+.day17 b{position:relative;z-index:1;font-weight:500}
+.day17 i{position:absolute;inset:3px -3px;border-radius:50%;background:rgba(215,154,161,.2);opacity:0;transition:opacity 1s 1.7s}
+.day17 svg{position:absolute;left:50%;top:50%;width:58px;height:44px;transform:translate(-50%,-50%) rotate(-6deg);overflow:visible;pointer-events:none}
+.day17 path{fill:none;stroke:#d79aa1;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.6s cubic-bezier(.55,.1,.3,1) .5s}
+#datecard.drawn .day17 path{stroke-dashoffset:0}
+#datecard.drawn .day17 i{opacity:1}
+
+/* летающие ласточки (bird.png) */
+#birds{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+.fly{position:absolute;left:0;top:0;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 6px 6px rgba(80,110,85,.25))}
+.fly i{display:block;width:100%;height:100%;background:var(--img-bird) center/contain no-repeat;
+  animation:flap .42s ease-in-out infinite alternate;transform-origin:50% 60%}
+@keyframes flap{from{transform:scaleY(1)}to{transform:scaleY(.64) skewX(-4deg)}}
+
+.date-row{display:grid;grid-template-columns:1fr 1.15fr;gap:14px;align-items:stretch}
+.date-row .paper{padding:26px 10px;display:flex;flex-direction:column;justify-content:center}
+.date-row .day{font-size:46px;line-height:1.1}
+.photo{border-radius:50% / 40%;background:#dde8da var(--img-photo) center/cover;min-height:210px;padding:0!important}
+.photo::before{border-radius:50% / 40%!important;inset:7px!important}
+
+.program p{margin:12px 0 2px;font-family:"Playfair Display",serif;font-size:28px;letter-spacing:.04em}
+.program .what{font-size:19px}
+
+.venue-img{height:170px;margin:-10px -6px 14px;background:var(--img-venue) center/contain no-repeat}
+.venue .place{font-size:44px;margin:6px 0}
+.venue,.timer{text-shadow:0 0 12px rgba(255,255,255,.95),0 0 4px rgba(255,255,255,.8)}
+.btn{display:inline-block;margin-top:14px;padding:12px 38px;border-radius:40px;border:1px solid var(--blue-d);
+  color:var(--ink);text-decoration:none;background:rgba(255,255,255,.6);font-size:19px;letter-spacing:.08em}
+.btn:hover,.btn:focus-visible{background:#fff;outline:2px solid var(--blue-d);outline-offset:2px}
+
+.hosts .names{font-size:30px;margin-top:8px}
+
+/* анкета */
+form{display:flex;flex-direction:column;gap:14px;text-align:left;margin-top:14px}
+input[type=text]{width:100%;padding:13px 18px;border-radius:30px;border:1px solid var(--blue-d);background:#fff;font:inherit;color:var(--ink)}
+label.opt{display:flex;gap:10px;align-items:center;font-size:18px}
+input[type=radio]{accent-color:#6b8a6d;width:18px;height:18px}
+form button{padding:14px;border:0;border-radius:30px;background:#6b8a6d;color:#fff;font:inherit;font-size:19px;letter-spacing:.1em;cursor:pointer}
+form button:disabled{opacity:.6}
+#thanks{display:none;font-size:22px;margin-top:14px}
+
+/* прямоугольная текстурная карточка с орнаментом */
+.hosts{
+  background:var(--img-paper) center/cover, url(img/paper-patch.jpg) center/100% 100% no-repeat;
+  background-image:url(img/paper-patch.jpg);
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  border-radius:0;
+  box-shadow:none;
+  padding:42px 30px;
+}
+.hosts::before{display:none}
+.hosts small{
+  display:block;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:18px;
+  line-height:1.45;
+  letter-spacing:.015em;
+  color:var(--soft);
+}
+.hosts .names{
+  font-size:30px;
+  line-height:1.2;
+  margin-top:10px;
+}
+
+/* таймер на такой же светлой текстурной подложке для контраста */
+.timer{
+  background:url(img/paper-patch.jpg) center/100% 100% no-repeat;
+  padding:38px 24px 42px;
+  margin:0 -2px;
+  text-shadow:none;
+  color:var(--ink);
+}
+.timer .cyr{font-size:26px}
+.count{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.count div{min-width:64px}
+.count b{display:block;font-family:"Playfair Display",serif;font-size:30px;font-weight:400}
+.count span{font-size:13px;color:var(--soft);letter-spacing:.12em}
+.mount{height:110px;background:var(--img-footer) center bottom/contain no-repeat}
+
+@media (prefers-reduced-motion:no-preference){
+  .cover{animation:in 1.2s ease both}
+  @keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА -->
+<nav class="lang" aria-label="Language">
+  <button data-lang="ru">RUS</button>
+  <button data-lang="kk">KZ</button>
+  <button data-lang="tr">TR</button>
+</nav>
+
+<!-- КОНВЕРТ: гость нажимает на печать — клапан открывается, включается музыка -->
+<div id="env" role="button" tabindex="0" aria-label="Open invitation">
+  <div class="pocket tex"></div>
+  <div class="flap"><div class="tex"></div></div>
+  <div class="seal"></div>
+  <p class="env-hint" data-i18n="open"></p>
+</div>
+
+<!-- МУЗЫКА: положите файл music/music.mp3 -->
+<audio id="bgm" src="music/music.mp3" loop preload="auto"></audio>
+<div id="birds" aria-hidden="true"></div>
+
+<main class="wrap">
+
+  <!-- 1. ОБЛОЖКА -->
+  <section class="cover">
+    
+    <div class="oval">
+            <div class="names"><div class="script">Anel</div><p data-i18n="ceremony"></p></div>
+    </div>
+  </section>
+
+  <!-- 2. ПРИГЛАШЕНИЕ -->
+  <section class="paper invite-text">
+    <h2 data-i18n="invH"></h2>
+    <p data-i18n="inv1"></p>
+    <div class="cyr nm" data-i18n="name"></div>
+    <p data-i18n="inv2"></p>
+  </section>
+
+  <!-- 3. ДАТА, ВРЕМЯ И КАЛЕНДАРЬ -->
+  <section class="paper datecard" id="datecard">
+    <div class="wd" data-i18n="wd"></div>
+    <div class="bigday"><span class="cyr">17</span><span class="mo cyr" data-i18n="mon"></span></div>
+    <div class="time"><b>14:00</b><span data-i18n="gather"></span></div>
+    <div class="calhead cyr" data-i18n="monNom"></div>
+    <div class="cal" id="cal"></div>
+  </section>
+
+  <!-- 5. ТОЙ ИЕЛЕРІ -->
+  <section class="paper hosts">
+    <small data-i18n="hosts"></small>
+    <div class="names cyr" data-i18n="parents"></div>  <!-- имена родителей: ключ parents в словаре T внизу -->
+  </section>
+
+  <!-- 6. МЕСТО -->
+  <section class="venue">
+    <div class="venue-img"></div>
+    <p data-i18n="region"></p>
+    <div class="place script">Port Love</div>
+    <p data-i18n="island"></p>
+    <a class="btn" href="https://2gis.kz/ustkam/geo/70000001037491555?inv_by=20744d610ea747ee9e20639fe9b059c2&inv_ts=1795506129" target="_blank" rel="noopener" data-i18n="map"></a>
+    <!-- ↑ замените ссылку на точную из 2ГИС (Поделиться → Копировать ссылку) -->
+  </section>
+
+  <!-- 7. АНКЕТА -->
+  <section class="paper">
+    <h2 data-i18n="rsvpTitle"></h2>
+    <form id="rsvp">
+      <input type="hidden" name="lang" id="langField">
+      <label><span data-i18n="yourName"></span>
+        <input type="text" name="name" data-i18n-ph="namePh" required></label>
+      <small data-i18n="nameHint"></small>
+      <!-- value уходит в таблицу всегда на русском -->
+      <label class="opt"><input type="radio" name="answer" value="Приду" required> <span data-i18n="yes"></span></label>
+      <label class="opt"><input type="radio" name="answer" value="Приду с супругом(ой)"> <span data-i18n="plus"></span></label>
+      <label class="opt"><input type="radio" name="answer" value="Не смогу прийти"> <span data-i18n="no"></span></label>
+      <button type="submit" data-i18n="send"></button>
+    </form>
+    <p id="thanks" data-i18n="thanks"></p>
+  </section>
+
+  <!-- 8. ТАЙМЕР -->
+  <section class="timer">
+    <div class="cyr" data-i18n="countdown"></div>
+    <div class="count">
+      <div><b id="d">0</b><span data-i18n="u1"></span></div>
+      <div><b id="h">0</b><span data-i18n="u2"></span></div>
+      <div><b id="m">0</b><span data-i18n="u3"></span></div>
+      <div><b id="s">0</b><span data-i18n="u4"></span></div>
+    </div>
+  </section>
+  <div class="mount"></div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ===== КОНВЕРТ И МУЗЫКА (стоит первым, чтобы письмо открывалось всегда) ===== */
+document.body.style.overflow = "hidden";
+let envOpened = false;
+function openEnv(){
+  if(envOpened) return; envOpened = true;
+  $("env").classList.add("open");
+  try{ $("bgm").play().catch(() => {}); }catch(e){}
+  setTimeout(() => document.body.classList.add("opened"), 1100);
+  setTimeout(() => { document.body.style.overflow = ""; }, 2400);
+  setTimeout(() => { try{ flock(); }catch(e){} }, 1800);
+}
+$("env").addEventListener("click", openEnv);
+$("env").addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ") openEnv(); });
+
+/* ===== НАСТРОЙКИ ===== */
+const EVENT_DATE = "2027-04-17T14:00:00+05:00"; // дата и время начала (Усть-Каменогорск, UTC+5)
+const FORM_URL   = "https://script.google.com/macros/s/AKfycbyb22FUQHu9Kezggjbzph-V-rWgAlOS_yA6UtB4R9Q5_VEFRZiPxx464nhI55Hz6SAjjg/exec";                            // URL веб-приложения Google Apps Script
+const DEFAULT_LANG = "ru";                        // ru / kk / tr
+
+/* ===== ТЕКСТЫ (правьте здесь) ===== */
+const T = {
+ru:{
+  ceremony:"Сырға салу",
+  invH:"Уважаемые гости!", inv1:"Приглашаем вас на церемонию Сырға салу, посвящённую нашей любимой дочери", name:"Анель",
+  inv2:"Будем рады видеть вас почётными гостями нашего торжественного дастархана!", open:"Нажмите на печать, чтобы открыть",
+  month:"апрель", program:"Программа", gather:"Сбор гостей",
+  wd:"суббота", mon:"апреля 2027", monNom:"Апрель 2027", dow:["Пн","Вт","Ср","Чт","Пт","Сб","Вс"], parents:"Адалбек – Жанна",
+  hosts:"С уважением, хозяева торжества:",
+  region:"Восточно-Казахстанская область, г. Усть-Каменогорск", island:"Остров Резиденция", map:"КАРТА",
+  rsvpTitle:"Просим подтвердить ваше присутствие!", yourName:"Ваше имя и фамилия:", namePh:"Имя (имена)",
+  nameHint:"(если придёте с супругом(ой), напишите, пожалуйста, оба имени)",
+  yes:"Приду", plus:"Приду с супругом(ой)", no:"Не смогу прийти", send:"ОТПРАВИТЬ",
+  thanks:"Спасибо! Ваш ответ принят 🤍", err:"Не удалось отправить, попробуйте ещё раз.",
+  countdown:"До торжества осталось:", u1:"ДНЕЙ", u2:"ЧАСОВ", u3:"МИНУТ", u4:"СЕКУНД"},
+kk:{
+  ceremony:"Сырға салу",
+  invH:"Құрметті қонақтар!", inv1:"Сіздерді аялы алақанымызда өскен аяулы қызымыз", name:"Анельдің",
+  inv2:"сырға салу рәсіміне арналған салтанатты дастарханымыздың қадірлі қонағы болуға шақырамыз!", open:"Ашу үшін мөрді басыңыз",
+  month:"сәуір", program:"Бағдарлама", gather:"Қонақтардың жиналуы",
+  wd:"сенбі", mon:"сәуір 2027", monNom:"Сәуір 2027", dow:["Дс","Сс","Ср","Бс","Жм","Сб","Жс"], parents:"Адалбек – Жанна",
+  hosts:"Құрметпен, той иелері:",
+  region:"Шығыс Қазақстан облысы, Өскемен қ.", island:"Остров Резиденция", map:"КАРТА",
+  rsvpTitle:"Тойға қатысуыңызды растауыңызды сұраймыз!", yourName:"Аты-жөніңіз:", namePh:"Есім(дер)іңіз",
+  nameHint:"(жұбайыңызбен келсеңіз, екеуіңіздің де есімдеріңізді жазуыңызды сұраймыз)",
+  yes:"Келемін", plus:"Жұбайыммен келемін", no:"Келе алмаймын", send:"ЖІБЕРУ",
+  thanks:"Рақмет! Жауабыңыз қабылданды 🤍", err:"Жіберу мүмкін болмады, қайталап көріңіз.",
+  countdown:"Той салтанатына дейін:", u1:"КҮН", u2:"САҒАТ", u3:"МИНУТ", u4:"СЕКУНД"},
+tr:{
+  ceremony:"Syrga Salu",
+  invH:"Sayın misafirlerimiz!", inv1:"Avuçlarımızda büyüttüğümüz sevgili kızımız", name:"Anel'in",
+  inv2:"Syrga Salu (küpe takma) törenine ithaf ettiğimiz sofranın değerli konuğu olmaya sizi davet ediyoruz!", open:"Açmak için mühre dokunun",
+  month:"Nisan", program:"Program", gather:"Misafirlerin karşılanması",
+  wd:"Cumartesi", mon:"Nisan 2027", monNom:"Nisan 2027", dow:["Pt","Sa","Ça","Pe","Cu","Ct","Pz"], parents:"Adalbek – Zhanna",
+  hosts:"Saygılarımızla, ev sahipleri:",
+  region:"Doğu Kazakistan bölgesi, Öskemen", island:"Ostrov Rezidentsiya", map:"HARİTA",
+  rsvpTitle:"Katılımınızı onaylamanızı rica ederiz!", yourName:"Adınız ve soyadınız:", namePh:"Ad(lar)ınız",
+  nameHint:"(eşinizle geliyorsanız, lütfen ikinizin de adını yazın)",
+  yes:"Geleceğim", plus:"Eşimle geleceğim", no:"Gelemeyeceğim", send:"GÖNDER",
+  thanks:"Teşekkürler! Yanıtınız alındı 🤍", err:"Gönderilemedi, lütfen tekrar deneyin.",
+  countdown:"Törene kalan süre:", u1:"GÜN", u2:"SAAT", u3:"DAKİKA", u4:"SANİYE"}
+};
+
+/* ===== КАЛЕНДАРЬ АПРЕЛЬ 2027 (1 апреля — четверг, неделя с понедельника) ===== */
+function buildCal(){
+  let h = T[lang].dow.map(d => `<span class="dw">${d}</span>`).join("") + "<span></span>".repeat(3);
+  for(let d = 1; d <= 30; d++) h += d === 17
+    ? '<span class="day17"><i></i><b>17</b><svg viewBox="0 0 60 44"><path pathLength="1" d="M50 13C44 5 22 3 11 12C2 20 6 36 24 40C42 44 58 34 55 21C53 12 42 6 30 6"/></svg></span>'
+    : `<span>${d}</span>`;
+  document.getElementById("cal").innerHTML = h;
+}
+
+/* ===== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ===== */
+let lang = DEFAULT_LANG;
+function setLang(l){
+  if(!T[l]) l = DEFAULT_LANG;
+  lang = l;
+  document.documentElement.lang = l;
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = T[l][el.dataset.i18n]);
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = T[l][el.dataset.i18nPh]);
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
+  document.getElementById("langField").value = l;
+  buildCal();
+  try{ localStorage.setItem("lang", l); }catch(e){}
+}
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => setLang(b.dataset.lang));
+/* приоритет: ссылка ?lang=kk → сохранённый выбор → язык по умолчанию */
+let start = new URLSearchParams(location.search).get("lang");
+try{ start = start || localStorage.getItem("lang"); }catch(e){}
+setLang(start || DEFAULT_LANG);
+
+/* ===== ТАЙМЕР ===== */
+function tick(){
+  const t = Math.max(0, new Date(EVENT_DATE) - Date.now()) / 1000;
+  $("d").textContent = Math.floor(t/86400);
+  $("h").textContent = Math.floor(t%86400/3600);
+  $("m").textContent = Math.floor(t%3600/60);
+  $("s").textContent = Math.floor(t%60);
+}
+tick(); setInterval(tick, 1000);
+
+/* круг вокруг 17 рисуется, когда календарь появляется на экране */
+new IntersectionObserver((en, ob) => en.forEach(x => {
+  if(x.isIntersecting){ $("datecard").classList.add("drawn"); ob.disconnect(); }
+}), {threshold:.9, rootMargin:"0px 0px -12% 0px"}).observe($("cal"));
+
+/* ===== ЛАСТОЧКИ ===== */
+const birds = $("birds"), calm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+function fly(o){
+  const s = o.size, d = o.dir, W = innerWidth, H = innerHeight;
+  const el = document.createElement("div");
+  el.className = "fly"; el.style.cssText = `width:${s}px;height:${s}px`;
+  el.innerHTML = `<i style="animation-duration:${o.flap || .42}s"></i>`;
+  birds.appendChild(el);
+  const xa = o.fromX != null ? o.fromX*W : (d > 0 ? -s : W + s), xb = d > 0 ? W + s : -s;
+  const t0 = performance.now() + (o.delay || 0);
+  (function step(now){
+    const t = (now - t0) / o.dur;
+    if(t < 0) return requestAnimationFrame(step);
+    if(t >= 1) return el.remove();
+    const sm = t*t*(3-2*t), ph = t*6.283*o.waves + o.ph;
+    const x = xa + (xb - xa)*t;
+    const y = (o.y0 + (o.y1 - o.y0)*sm)*H + Math.sin(ph)*o.amp*H;
+    const dy = (o.y1 - o.y0)*6*t*(1-t)*H + Math.cos(ph)*6.283*o.waves*o.amp*H;
+    const a = Math.max(-.6, Math.min(.6, Math.atan2(dy, Math.abs(xb - xa))))*d;
+    const sc = o.burst ? Math.min(1, .25 + t*5) : 1;
+    el.style.opacity = Math.min(1, t*8, (1 - t)*8)*.95;
+    el.style.transform = `translate(${x - s/2}px,${y - s/2}px) rotate(${a}rad) scale(${d*sc},${sc})`;
+    requestAnimationFrame(step);
+  })(performance.now());
+}
+function flock(){   /* стая вылетает при открытии конверта */
+  if(calm) return;
+  [
+    {dir: 1, size:130, y0:.55, y1:.10, amp:.05, waves:1.5, ph:0, dur:9000,  delay:0,    fromX:.5, burst:1},
+    {dir:-1, size:112, y0:.50, y1:.20, amp:.06, waves:1.2, ph:2, dur:10000, delay:350,  fromX:.5, burst:1},
+    {dir: 1, size:92, y0:.85, y1:.30, amp:.05, waves:2,   ph:1, dur:11000, delay:1200},
+    {dir:-1, size:84, y0:.20, y1:.70, amp:.07, waves:1.6, ph:4, dur:12000, delay:2400},
+    {dir: 1, size:72, y0:.70, y1:.15, amp:.04, waves:2.5, ph:3, dur:13000, delay:4200}
+  ].forEach(fly);
+  setTimeout(ambient, 16000);
+}
+function ambient(){ /* потом изредка пролетает одна ласточка у верхнего или нижнего края */
+  const top = Math.random() < .5, y = top ? .07 + Math.random()*.08 : .88 - Math.random()*.05;
+  fly({dir:Math.random() < .5 ? 1 : -1, size:64, y0:y, y1:y + (top ? .04 : -.04), amp:.012, waves:2, ph:Math.random()*6, dur:14000});
+  setTimeout(ambient, 20000 + Math.random()*15000);
+}
+
+/* ===== АНКЕТА → GOOGLE-ТАБЛИЦА ===== */
+$("rsvp").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button"); btn.disabled = true;
+  try{
+    if(FORM_URL) await fetch(FORM_URL, {method:"POST", mode:"no-cors", body:new URLSearchParams(new FormData(e.target))});
+    e.target.style.display = "none"; $("thanks").style.display = "block";
+  }catch(err){ btn.disabled = false; alert(T[lang].err); }
+});
+</script>
+</body>
+</html>
